@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Reporting Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #ff4081;
+            color: white;
+            padding: 2em 1em;
+            text-align: center;
+            font-size: 1.8em;
+            text-shadow: 2px 2px #000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 2em;
+            background: #ffccf9;
+            padding: 1em;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            cursor: pointer;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        nav a:hover {
+            transform: scale(1.2);
+            color: #ff4081;
+        }
+
+        .content {
+            padding: 2em;
+            max-width: 1000px;
+            margin: auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            margin-top: 2em;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .page:not(.hidden) {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        input, textarea, select, button {
+            font-family: inherit;
+            font-size: 1em;
+            width: 100%;
+            margin: 0.5em 0;
+            padding: 0.7em;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #673ab7;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #5e35b1;
+            transform: scale(1.05);
+        }
+
+        .card {
+            border: 2px dashed #e91e63;
+            padding: 1em;
+            margin-top: 1em;
+            border-radius: 12px;
+            background: #fff0f6;
+        }
+
+        .chat-box {
+            margin-top: 2em;
+            background: #e1f5fe;
+            border: 2px solid #29b6f6;
+            border-radius: 12px;
+            padding: 1em;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #ff4081;
+            color: white;
+            padding: 0.6em 1em;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="theme-toggle" onclick="document.body.classList.toggle('dark-theme')">🌙 Theme</div>
+<header>
+    <h1><i class="fas fa-shield-alt"></i> Fraud Reporting & Prevention Portal</h1>
+</header>
+<nav>
+    <a onclick="playSound(); showPage('login')"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <a onclick="playSound(); showPage('report')"><i class="fas fa-exclamation-triangle"></i> Report</a>
+    <a onclick="playSound(); showPage('prevention')"><i class="fas fa-lightbulb"></i> Tips</a>
+    <a onclick="playSound(); showPage('about')"><i class="fas fa-info-circle"></i> About</a>
+    <a onclick="playSound(); showPage('contact')"><i class="fas fa-envelope"></i> Contact</a>
+    <a onclick="playSound(); showPage('faq')"><i class="fas fa-question-circle"></i> FAQs</a>
+</nav>
+<div class="content">
+    <div id="login" class="page">
+        <h2>Login</h2>
+        <label>Username</label>
+        <input id="username" placeholder="Username">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Password">
+        <label>Login As</label>
+        <select id="role">
+            <option>User</option>
+            <option>Admin</option>
+        </select>
+        <button onclick="validateLogin()">Login</button>
+    </div>
+
+    <div id="report" class="page hidden">
+        <h2>Report a Fraud</h2>
+        <label for="fraudType">🕵️ Fraud Type</label>
+        <select id="fraudType" onchange="displayAuthorities()">
+            <option value="">-- Select Fraud Type --</option>
+            <option value="cyber">🖥️ Cyber Fraud</option>
+            <option value="financial">💰 Financial Scam</option>
+            <option value="identity">🧾 Identity Theft</option>
+        </select>
+        <label>Description</label>
+        <textarea placeholder="Description"></textarea>
+        <label>Date</label>
+        <input type="date">
+        <label>Location</label>
+        <input placeholder="Location">
+        <label>Upload Evidence</label>
+        <input type="file" accept=".jpg,.png,.pdf,.docx,.zip">
+        <button onclick="validateReportForm()">Submit</button>
+        <div id="authorityInfo" class="authority-list"></div>
+    </div>
+
+    <div id="prevention" class="page hidden">
+        <h2>Prevention Tips</h2>
+        <div class="card">💡 Never share your OTPs or passwords.</div>
+        <div class="card">🔒 Use strong passwords & 2FA.</div>
+        <div class="card">🛡️ Beware of fake links/emails.</div>
+    </div>
+
+    <div id="about" class="page hidden">
+        <h2>About This Portal</h2>
+        <p>We aim to empower users to report and prevent fraud. Stay safe!</p>
+    </div>
+
+    <div id="contact" class="page hidden">
+        <h2>Contact Us</h2>
+        <label>Email</label>
+        <input placeholder="Your Email">
+        <label>Message</label>
+        <textarea placeholder="Your Message"></textarea>
+        <button onclick="alert('Message Sent!')">Send</button>
+    </div>
+
+    <div id="faq" class="page hidden">
+        <h2>Frequently Asked Questions</h2>
+        <div class="card">Q: Is this anonymous?<br>A: Yes, completely anonymous.</div>
+        <div class="card">Q: Can I edit reports?<br>A: Not currently, but it's coming soon!</div>
+    </div>
+
+    <div class="chat-box">
+        <strong>🤖 Chat Assistant:</strong>
+        <div id="chatMessages" style="margin-bottom: 1em; max-height: 150px; overflow-y: auto;"></div>
+        <input type="text" id="userInput" placeholder="Ask a question..." onkeydown="if(event.key === 'Enter') handleChat()" />
+        <button onclick="handleChat()">Send</button>
+    </div>
+</div>
+<script>
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+}
+
+function playSound() {
+    const audio = new Audio('https://assets.mixkit.co/sfx/download/mixkit-arcade-game-jump-coin-216.wav');
+    audio.volume = 0.4;
+    audio.play();
+}
+
+function validateLogin() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    if (!user || !pass) {
+        alert("Please enter both username and password.");
+    } else {
+        alert("✅ Login successful!");
+        showPage('report');
+    }
+}
+
+function validateReportForm() {
+    const type = document.getElementById('fraudType').value;
+    const description = document.querySelector('#report textarea').value;
+    const date = document.querySelector('#report input[type="date"]').value;
+    const location = document.querySelector('#report input[placeholder="Location"]').value;
+
+    if (!type || !description || !date || !location) {
+        alert('Please fill in all the fields.');
+    } else {
+        alert('Fraud report submitted successfully!');
+        if (confirm("Do you want to download a receipt?")) {
+            generateReceipt();
+        }
+    }
+}
+
+function generateReceipt() {
+    const blob = new Blob(["Your fraud report has been received.\nReference ID: FRD" + Date.now()], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "FraudReportReceipt.txt";
+    link.click();
+}
+
+function displayAuthorities() {
+    const type = document.getElementById('fraudType').value;
+    const info = {
+        cyber: [
+            { name: "Cyber Crime Unit", contact: "cybercrime@gov.in | 1800-11-4000" },
+            { name: "CERT-In", contact: "incident@cert-in.org.in" }
+        ],
+        financial: [
+            { name: "Financial Intelligence Unit", contact: "fiu-ind@gov.in" },
+            { name: "Local Police", contact: "Call 100 or visit the nearest police station" }
+        ],
+        identity: [
+            { name: "Identity Theft Bureau", contact: "idtheft@gov.in" },
+            { name: "Cyber Crime Cell", contact: "report@cybercrime.gov.in" }
+        ]
+    };
+
+    const output = document.getElementById('authorityInfo');
+    output.innerHTML = '';
+
+    if (info[type]) {
+        output.innerHTML = '<h3>Suggested Authorities:</h3>' +
+            info[type].map(auth => `<div class="card"><strong>${auth.name}</strong><br>📞 ${auth.contact}</div>`).join('');
+    }
+}
+
+window.onload = () => {
+    document.getElementById('chatMessages').innerHTML += 
+        `<div><strong>Bot:</strong> 👋 Welcome! Type your question or click a section above to begin.</div>`;
+};
+
+function handleChat() {
+    const input = document.getElementById('userInput').value.trim();
+    if (!input) return;
+
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML += `<div><strong>You:</strong> ${input}</div>`;
+    chatMessages.innerHTML += `<div id="botTyping"><em>Bot is typing...</em></div>`;
+
+    const inputLower = input.toLowerCase();
+    let reply = "I'm sorry, I didn't understand that. Try asking about 'report', 'authorities', or 'tips'.";
+    if (inputLower.includes("hello") || inputLower.includes("hi")) reply = "Hi there! How can I assist you today?";
+    else if (inputLower.includes("report")) reply = "To report fraud, please go to the Report section in the navigation.";
+    else if (inputLower.includes("authority")) reply = "Check the Report section after selecting a fraud type for authority contacts.";
+    else if (inputLower.includes("tips")) reply = "Use strong passwords, don’t click suspicious links, and enable two-factor authentication.";
+    else if (inputLower.includes("contact")) reply = "You can contact us from the Contact section in the menu.";
+
+    setTimeout(() => {
+        document.getElementById('botTyping').innerHTML = `<strong>Bot:</strong> ${reply}`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 800);
+    document.getElementById('userInput').value = "";
+}
+</script>
+</body>
+</html>
